@@ -117,7 +117,7 @@ async def pwd(ctx):
  
 @bot.command()
 async def bft(ctx):
-            comds = os.popen("sh /path/2/bft2.txt").read()
+            comds = os.popen("sh Brewfetch.sh").read()
             comds.replace("`", "\\`")
             
             printer = f"```\n{comds}\n```"
