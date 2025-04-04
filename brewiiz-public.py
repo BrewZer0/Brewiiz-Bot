@@ -3,6 +3,7 @@ from discord.ext import commands
 import io
 import os
 import logging
+from PIL import Image
 
 logging.basicConfig(level=logging.INFO)
 
@@ -11,6 +12,40 @@ intents.messages= True
 intents.message_content = True
 allowed_mentions = discord.AllowedMentions(everyone = True)
 bot = commands.Bot(command_prefix=';', intents=intents)
+
+# This is something for the ascii bot lel
+
+ascii_chars_light_to_dark = [
+  ' ', '.', '_',  ':',  '/',  '=', '$', '#', '@', '░', '▒', '▓', '█'
+]
+
+ascii_chars_dark_to_light = ascii_chars_light_to_dark[::-1]
+
+def image_to_ascii(image, ascii_chars, max_width=100):
+    image = image.convert('L')
+    width, height = image.size
+
+    aspect_ratio = height / width
+    new_width = min(max_width, width)
+    new_height = int(aspect_ratio * new_width * 0.55) 
+    image = image.resize((new_width, new_height))
+    pixels = list(image.getdata())
+    ascii_str = ''
+
+    for i in range(new_height):
+        for j in range(new_width):
+            pixel_value = pixels[i * new_width + j]
+            ascii_str += ascii_chars[pixel_value * len(ascii_chars) // 256]
+        ascii_str += '\n'
+
+    return ascii_str
+
+
+@bot.event
+async def on_ready():
+    print(f"Hey! you're running on {bot.user.name}.")
+        
+# _______ COMMAND CODES __________
 
 @bot.command()
 async def sxe(ctx):
@@ -80,8 +115,8 @@ async def pwd(ctx):
             await ctx.send(printer)     
  
 @bot.command()
-async def fetch(ctx):
-            comds = os.popen("sh /path/to/POSIX/fetch.sh").read()
+async def bft(ctx):
+            comds = os.popen("sh /path/2/bft2.txt").read()
             comds.replace("`", "\\`")
             
             printer = f"```\n{comds}\n```"
@@ -101,4 +136,60 @@ async def date(ctx):
 async def presents(ctx):
          await ctx.send("**Hi, i'm Brewiiz, a bot coded in discord.py.**\n i was originally a thousand different things, starting from robot liberabot (viznut, you're the fucking goat of demos) back in i guess january 2025. i forgor 💀\n\nSlightly based from **Buck's BrewBot code** which solved my whole issue with embedding GNU/Linux commands to linux for shits and giggles (as simple as an os.popen statement, almost).\n i will expand to add more functionalities from other bots, such as an image to ASCII converter. Hope you use me as i upgrade and... contribute if you can code with discord.py.\nComing soon to a github near you :3\n-# Brewiiz PFP by <@1300105674285387898>. ")         
 
-bot.run('ADD_A_TOKEN')
+@bot.command()
+async def uptime(ctx):
+            """
+            
+    """
+
+            comd = os.popen("uptime").read()
+            comd.replace("`", "\\`")
+            
+            printer = f"```\n{comd}\n```"
+            await ctx.send(printer)
+
+@bot.command()
+async def ping(ctx):
+ await ctx.send("Pong!")
+ 
+@bot.command()
+async def random(ctx):
+            """
+            20 Random characters from /dev/random
+    """
+
+            comd = os.popen("head -c 100 /dev/random | tr -dc 'A-Za-z0-9' | head -c 20").read()
+            comd.replace("`", "\\`")
+            
+            printer = f"\n{comd}\n"
+            await ctx.send(printer)
+
+@bot.command()
+async def img2ascii(ctx):
+    await ctx.send("Initializing :3")
+    if ctx.message.attachments:
+        attachment = ctx.message.attachments[0]
+        try:
+            image_bytes = await attachment.read()
+            image = Image.open(io.BytesIO(image_bytes))
+
+
+            if image.format not in ['JPEG', 'PNG']:
+                await ctx.send('your image has to be either a PNG or a JPEG')
+                return
+
+            ascii_art = image_to_ascii(image, ascii_chars_light_to_dark, max_width=40)
+
+            max_message_length = 2000 - 8 - 6  
+            if len(ascii_art) > max_message_length:
+                ascii_art = ascii_art[:max_message_length]  
+            await ctx.send(f'```\n{ascii_art}\n```')
+            await ctx.send("converted °3°")
+        except Exception as e:
+            await ctx.send(f'an error occurred. Details:\n{str(e)}')
+    else:
+        await ctx.send("no image attached, showing help / suggestion menu.\nSuggested images aspect ratios are 1:1 and possibly 4:3. because i still lack a proper palette (goddamnit alex aperture science), your images may look like crap, :<  ")
+
+
+
+bot.run("ADD_TOKEN")
