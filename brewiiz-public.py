@@ -80,8 +80,8 @@ async def pwd(ctx):
             await ctx.send(printer)     
  
 @bot.command()
-async def bft(ctx):
-            comds = os.popen("sh /storage/emulated/0/download/bft2.txt").read()
+async def fetch(ctx):
+            comds = os.popen("sh /path/to/POSIX/fetch.sh").read()
             comds.replace("`", "\\`")
             
             printer = f"```\n{comds}\n```"
