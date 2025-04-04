@@ -5,8 +5,9 @@ import os
 import logging
 from PIL import Image
 
-logging.basicConfig(level=logging.INFO)
+print("Brewiiz Bot Runner\n 2025 Brewy. the fuck are rights?")
 
+logging.basicConfig(level=logging.INFO)
 intents = discord.Intents.default()
 intents.messages= True
 intents.message_content = True
@@ -190,6 +191,8 @@ async def img2ascii(ctx):
     else:
         await ctx.send("no image attached, showing help / suggestion menu.\nSuggested images aspect ratios are 1:1 and possibly 4:3. because i still lack a proper palette (goddamnit alex aperture science), your images may look like crap, :<  ")
 
-
-
+@bot.command()
+async def gnuify(ctx, arg):
+    await ctx.send(f"GNU/{arg}")
+    
 bot.run("ADD_TOKEN")
